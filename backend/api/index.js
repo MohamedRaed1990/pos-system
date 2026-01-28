@@ -59,11 +59,27 @@ app.use((err,req,res,next)=>{
 
 const PORT = process.env.PORT || 5000
 
-mongoose.connect(process.env.MONGO_URI)
-.then(()=>{
-    console.log("MongoDB Connected")
-    // app.listen(PORT , () => console.log(`Server running on port ${PORT}`))
-})
-.catch(err => console.log(err))
+// mongoose.connect(process.env.MONGO_URI)
+// .then(()=>{
+//     console.log("MongoDB Connected")
+//     // app.listen(PORT , () => console.log(`Server running on port ${PORT}`))
+// })
+// .catch(err => console.log(err))
+
+const connectDB = async () => {
+    if (mongoose.connection.readyState >= 1) return;
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log("MongoDB Connected");
+    } catch (err) {
+        console.error("MongoDB Connection Error:", err);
+    }
+};
+
+// Middleware للتأكد من الاتصال قبل معالجة أي طلب
+app.use(async (req, res, next) => {
+    await connectDB();
+    next();
+});
 
 export default app;
