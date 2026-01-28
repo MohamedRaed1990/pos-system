@@ -18,7 +18,7 @@ import notificationRoutes from "../routes/notificationRoutes.js";
 import settingsRoutes from "../routes/settingsRoutes.js";
 import userAuthRoutes from "../routes/userAuthRoutes.js";
      
-dotenv.config()
+// dotenv.config()
 
 const app = express()
 
