@@ -23,7 +23,7 @@ import userAuthRoutes from "../routes/userAuthRoutes.js";
 const app = express()
 
 app.use(cors({
-    origin:['http://localhost:5174','https://pos-system-eight-lake.vercel.app'],
+    origin:['http://localhost:5173','https://pos-system-eight-lake.vercel.app'],
     credentials:true
 }))
 
