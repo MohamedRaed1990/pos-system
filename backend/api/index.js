@@ -105,30 +105,51 @@ const PORT = process.env.PORT || 5000
 
 
 // متغير لتخزين حالة الاتصال
-let isConnected = false;
+// let isConnected = false;
+
+// const connectDB = async () => {
+//     mongoose.set('strictQuery', true);
+//     if (isConnected) return;
+
+//     try {
+//         const db = await mongoose.connect(process.env.MONGO_URI);
+//         isConnected = db.connections[0].readyState;
+//         console.log("MongoDB Connected");
+//     } catch (err) {
+//         console.error("MongoDB Connection Error:", err);
+//         throw err;
+//     }
+// };
+
+// // Middleware للتأكد من الاتصال قبل معالجة أي Route
+// app.use(async (req, res, next) => {
+//     try {
+//         await connectDB();
+//         next();
+//     } catch (err) {
+//         res.status(500).json({ message: "Database connection failed" });
+//     }
+// });
+
+mongoose.connection.on('error', err => {
+  console.error('Mongoose connection error:', err);
+});
 
 const connectDB = async () => {
-    mongoose.set('strictQuery', true);
-    if (isConnected) return;
-
     try {
-        const db = await mongoose.connect(process.env.MONGO_URI);
-        isConnected = db.connections[0].readyState;
-        console.log("MongoDB Connected");
-    } catch (err) {
-        console.error("MongoDB Connection Error:", err);
-        throw err;
+        if (mongoose.connection.readyState >= 1) return;
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log("MongoDB Connected Successfully");
+    } catch (error) {
+        console.error("Critical: MongoDB connection failed!", error);
+        // لا تترك السيرفر ينهار بصمت
     }
 };
 
-// Middleware للتأكد من الاتصال قبل معالجة أي Route
+// في الـ Middleware
 app.use(async (req, res, next) => {
-    try {
-        await connectDB();
-        next();
-    } catch (err) {
-        res.status(500).json({ message: "Database connection failed" });
-    }
+    await connectDB();
+    next();
 });
 
 export default app;
