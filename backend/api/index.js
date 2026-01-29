@@ -22,23 +22,33 @@ import userAuthRoutes from "../routes/userAuthRoutes.js";
 
 const app = express()
 
-const allowedOrigins = ['https://pos-system-eight-lake.vercel.app', 'http://localhost:5173'];
+// 1. حدد المواقع المسموح لها بالوصول
+const allowedOrigins = [
+    'https://pos-system-eight-lake.vercel.app',
+    'http://localhost:5173'
+];
 
+// 2. إعدادات CORS
 app.use(cors({
     origin: function (origin, callback) {
-        // السماح بالطلبات التي ليس لها origin (مثل تطبيقات الموبايل أو Postman)
+        // السماح بالطلبات التي ليس لها origin (مثل Postman أو السيرفرات الأخرى)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            return callback(new Error('CORS policy violation'), false);
+        
+        // التحقق مما إذا كان الموقع موجود في القائمة
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            // اطبع الـ origin المرفوض في الـ Logs لتعرف ما هو بالضبط
+            console.log("Blocked Origin:", origin);
+            callback(new Error('CORS policy violation'), false);
         }
-        return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
-// معالجة طلبات OPTIONS يدوياً (حل سحري لمشاكل Vercel)
+// 3. معالجة طلبات OPTIONS لجميع المسارات
 app.options('*', cors());
 
 // app.use(cors({
