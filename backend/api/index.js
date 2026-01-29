@@ -22,12 +22,31 @@ import userAuthRoutes from "../routes/userAuthRoutes.js";
 
 const app = express()
 
+const allowedOrigins = ['https://pos-system-eight-lake.vercel.app', 'http://localhost:5173'];
+
 app.use(cors({
-    origin:['http://localhost:5173','https://pos-system-eight-lake.vercel.app/'],
-    credentials:true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}))
+    origin: function (origin, callback) {
+        // السماح بالطلبات التي ليس لها origin (مثل تطبيقات الموبايل أو Postman)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            return callback(new Error('CORS policy violation'), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+}));
+
+// معالجة طلبات OPTIONS يدوياً (حل سحري لمشاكل Vercel)
+app.options('*', cors());
+
+// app.use(cors({
+//     origin:['http://localhost:5173','https://pos-system-eight-lake.vercel.app/'],
+//     credentials:true,
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     allowedHeaders: ["Content-Type", "Authorization"]
+// }))
 
 app.use(express.json())
 app.use(cookieParser())
