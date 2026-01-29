@@ -35,7 +35,9 @@ app.use(cors({
         if (!origin) return callback(null, true);
         
         // التحقق مما إذا كان الموقع موجود في القائمة
-        if (allowedOrigins.includes(origin)) {
+        const isVercel = origin.endsWith('.vercel.app');
+        const isLocal = origin.startsWith('http://localhost');
+        if (isVercel || isLocal || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
             // اطبع الـ origin المرفوض في الـ Logs لتعرف ما هو بالضبط
@@ -45,7 +47,7 @@ app.use(cors({
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With','Accept']
 }));
 
 // 3. معالجة طلبات OPTIONS لجميع المسارات
