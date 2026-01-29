@@ -66,20 +66,48 @@ const PORT = process.env.PORT || 5000
 // })
 // .catch(err => console.log(err))
 
+// const connectDB = async () => {
+//     if (mongoose.connection.readyState >= 1) return;
+//     try {
+//         await mongoose.connect(process.env.MONGO_URI);
+//         console.log("MongoDB Connected");
+//     } catch (err) {
+//         console.error("MongoDB Connection Error:", err);
+//     }
+// };
+
+// // Middleware للتأكد من الاتصال قبل معالجة أي طلب
+// app.use(async (req, res, next) => {
+//     await connectDB();
+//     next();
+// });
+
+
+// متغير لتخزين حالة الاتصال
+let isConnected = false;
+
 const connectDB = async () => {
-    if (mongoose.connection.readyState >= 1) return;
+    mongoose.set('strictQuery', true);
+    if (isConnected) return;
+
     try {
-        await mongoose.connect(process.env.MONGO_URI);
+        const db = await mongoose.connect(process.env.MONGO_URI);
+        isConnected = db.connections[0].readyState;
         console.log("MongoDB Connected");
     } catch (err) {
         console.error("MongoDB Connection Error:", err);
+        throw err;
     }
 };
 
-// Middleware للتأكد من الاتصال قبل معالجة أي طلب
+// Middleware للتأكد من الاتصال قبل معالجة أي Route
 app.use(async (req, res, next) => {
-    await connectDB();
-    next();
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        res.status(500).json({ message: "Database connection failed" });
+    }
 });
 
 export default app;
