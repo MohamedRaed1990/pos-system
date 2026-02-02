@@ -63,6 +63,34 @@ app.options('*', cors());
 app.use(express.json())
 app.use(cookieParser())
 
+
+mongoose.connection.on('error', err => {
+  console.error('Mongoose connection error:', err);
+});
+
+const connectDB = async () => {
+    try {
+        if (mongoose.connection.readyState >= 1) return;
+        console.log("Attempting to connect to Mongo with URI length:", process.env.MONGO_URI?.substring(0, 15));
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log("MongoDB Connected Successfully");
+    } catch (error) {
+        console.error("Critical: MongoDB connection failed!", error.message);
+        // لا تترك السيرفر ينهار بصمت
+    }
+};
+
+// في الـ Middleware
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        res.status(500).json({ error: "Database connection failed" });
+    }
+});
+
+
 app.get('/api',(req , res)=> res.json({message:"API is running..."}))
 
 app.use('/api/admin/auth' , authRoutes)
@@ -90,7 +118,7 @@ app.use((err,req,res,next)=>{
     res.status(500).json({message:err.message})
 })
 
-const PORT = process.env.PORT || 5000
+//const PORT = process.env.PORT || 5000
 
 // mongoose.connect(process.env.MONGO_URI)
 // .then(()=>{
@@ -143,30 +171,6 @@ const PORT = process.env.PORT || 5000
 //     }
 // });
 
-mongoose.connection.on('error', err => {
-  console.error('Mongoose connection error:', err);
-});
 
-const connectDB = async () => {
-    try {
-        if (mongoose.connection.readyState >= 1) return;
-        console.log("Attempting to connect to Mongo with URI length:", process.env.MONGO_URI?.substring(0, 15));
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log("MongoDB Connected Successfully");
-    } catch (error) {
-        console.error("Critical: MongoDB connection failed!", error.message);
-        // لا تترك السيرفر ينهار بصمت
-    }
-};
-
-// في الـ Middleware
-app.use(async (req, res, next) => {
-    try {
-        await connectDB();
-        next();
-    } catch (error) {
-        res.status(500).json({ error: "Database connection failed" });
-    }
-});
 
 export default app;
