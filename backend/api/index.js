@@ -160,8 +160,12 @@ const connectDB = async () => {
 
 // في الـ Middleware
 app.use(async (req, res, next) => {
-    await connectDB();
-    next();
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        res.status(500).json({ error: "Database connection failed" });
+    }
 });
 
 export default app;
