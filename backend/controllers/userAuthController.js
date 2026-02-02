@@ -5,8 +5,8 @@ const createToken = (res , userId) => {
     const token = jwt.sign({id:userId},process.env.JWT_SECRET,{expiresIn:'7d'})
     res.cookie('token',token,{
         httpOnly:true,
-        secure: false,//process.env.NODE_ENV === 'production',
-        sameSite:'strict',//process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: process.env.NODE_ENV === 'production',//false,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',//'strict',
         maxAge: 7 * 24 * 60 * 60 * 1000,
     })
     return token
