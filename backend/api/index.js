@@ -150,10 +150,11 @@ mongoose.connection.on('error', err => {
 const connectDB = async () => {
     try {
         if (mongoose.connection.readyState >= 1) return;
+        console.log("Attempting to connect to Mongo with URI length:", process.env.MONGO_URI?.substring(0, 15));
         await mongoose.connect(process.env.MONGO_URI);
         console.log("MongoDB Connected Successfully");
     } catch (error) {
-        console.error("Critical: MongoDB connection failed!", error);
+        console.error("Critical: MongoDB connection failed!", error.message);
         // لا تترك السيرفر ينهار بصمت
     }
 };
