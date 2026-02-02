@@ -7,6 +7,7 @@ const createToken = (res , userId) => {
         httpOnly:true,
         secure: true,//false,
         sameSite:'none',//'strict',
+        expires: new Date(0),
         maxAge: 7 * 24 * 60 * 60 * 1000,
     })
     return token

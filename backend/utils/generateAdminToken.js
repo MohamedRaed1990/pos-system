@@ -12,6 +12,7 @@ export const sendAdminToken = (admin,res) => {
         secure:true,
         sameSite:'none',
         // sameSite:process.env.NODE_ENV === 'production' ? 'none' : 'lax',//'none',
+        expires: new Date(0),
         maxAge:7 * 24 * 60 * 60 * 1000
     });
     return res.json({
