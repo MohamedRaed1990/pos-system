@@ -63,6 +63,11 @@ app.options('*', cors());
 app.use(express.json())
 app.use(cookieParser())
 
+// 2. أضف كود منع التخزين المؤقت هنا ✅
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+});
 
 mongoose.connection.on('error', err => {
   console.error('Mongoose connection error:', err);
