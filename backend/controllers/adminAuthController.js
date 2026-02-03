@@ -44,6 +44,7 @@ export const adminLogout = (req, res) => {
         secure: true,      // ضروري جداً لأن Vercel يعمل بـ HTTPS
         sameSite: 'none',  // ضروري لأن الرابطين مختلفان
         path: '/',         // لضمان حذف الكوكي من جذور الدومين
+        domain: '.vercel.app'
     });
 
     // 2. كاحتياط إضافي (Double Check): إعادة ضبط الكوكي بقيمة فارغة وتاريخ منتهي
