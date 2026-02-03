@@ -123,6 +123,7 @@ export const AuthProvider = ({children})=>{
         await API.post('/auth/logout')
 
         setUser(null)
+        window.location.replace('/login');
     }
 
     return (
