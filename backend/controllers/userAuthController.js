@@ -51,10 +51,20 @@ export const loginUser = async(req,res) => {
     }
 }
 
-export const logoutUser = (req , res) => {
-    res.clearCookie('token')
-    res.status(200).json({message:'Logged out successfuly'})
-}
+// export const logoutUser = (req , res) => {
+//     res.clearCookie('token')
+//     res.status(200).json({message:'Logged out successfuly'})
+// }
+
+export const logoutUser = (req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: true,      // إجباري في Vercel
+        sameSite: 'none',  // إجباري في Vercel
+        path: '/',
+    });
+    res.status(200).json({ message: 'Logged out successfully' });
+};
 
 export const getMe = async(req , res) => {
     const user = await User.findById(req.user.id).select('-password')
