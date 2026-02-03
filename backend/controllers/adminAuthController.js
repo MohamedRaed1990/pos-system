@@ -33,13 +33,7 @@ export const adminLogin = async(req,res)=>{
 }
 
 export const adminLogout = (req , res) => {
-    //res.cookie('token','',{maxAge:1})
-    res.cookie('token', '', {
-        httpOnly: true,
-        secure: true,      // إجباري في Vercel
-        sameSite: 'none',  // إجباري لأن الروابط مختلفة
-        expires: new Date(0) // طريقة أكثر أماناً للحذف الفوري
-    });
+    res.cookie('token','',{maxAge:1})
     res.json({message:'Logged out'})
 }
 
