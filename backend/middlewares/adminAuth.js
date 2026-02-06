@@ -12,7 +12,8 @@ export const protectAdmin = async (req , res , next) => {
         console.log('Decoded:', decoded)
         const admin = await Admin.findById(decoded.id).select('-password');
     if (!admin) {
-      return res.status(401).json({ message: 'Not an admin' });
+        console.error('Admin not found:', decoded.id)
+      return res.status(401).json({ message: 'Not an admin' ,foundId: decoded.id});
     }
 
     req.admin = admin;
