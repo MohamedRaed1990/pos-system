@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 
 export const sendAdminToken = (admin,res) => {
     const token = jwt.sign(
-        {id:admin._id.toString(),role:admin.role.toString()},
+        {id:admin._id,role:admin.role},
         process.env.JWT_SECRET,
         {expiresIn:'7d'}
     );
@@ -19,10 +19,10 @@ export const sendAdminToken = (admin,res) => {
         success:true,
         message:'Authenticated successfully',
         admin:{
-            id:admin._id.toString(),
+            id:admin._id,
             name:admin.name,
             email:admin.email,
-            role:admin.role.toString()
+            role:admin.role
         },
         token
     })
