@@ -14,7 +14,7 @@ const router = express.Router();
 // router.post('/',protect,authorize('manager','admin','super-admin'),createCustomer)
 // router.put('/:id',protect,authorize('manager','admin','super-admin'),updateCustomer)
 // router.delete('/:id',protect,authorize('admin','super-admin'),deleteCustomer)
-router.get('/', protectAdmin ,getCustomers)
+router.get('/' ,getCustomers)
 router.post('/',protectAdmin,authorizeAdmin('manager','admin','super-admin'),createCustomer)
 router.put('/:id',protectAdmin,authorizeAdmin('manager','admin','super-admin'),updateCustomer)
 router.delete('/:id',protectAdmin,authorizeAdmin('admin','super-admin'),deleteCustomer)
