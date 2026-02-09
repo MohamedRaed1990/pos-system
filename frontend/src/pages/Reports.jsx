@@ -1,17 +1,17 @@
 import { useState , useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
+    LineChart as ChartIcon,
     Calendar, 
     Trophy,
     BarChart3,
     TrendingUp,
     ArrowRight,
-    LineChart,
     Star
 } from 'lucide-react';
 import { FaBoxOpen } from 'react-icons/fa6';
 import {
-    LineChart as RLineChart,
+    LineChart,
     Line,
     CartesianGrid,
     XAxis,
@@ -30,11 +30,60 @@ const Reports = () => {
     const [ dates , setDates ] =useState({start:"",end:""})
     const [ chartData , setChartData ] = useState([])
 
-    useEffect(()=>{
-        API.post('/reports/daily').then((res)=>setDaily(res.data))
-        API.get('/reports/top-products').then((res)=>{console.log(res.data);setTopProducts(res.data)})
-        API.post('/reports/weekly').then((res)=>setChartData(res.data))
-    },[])
+    // useEffect(()=>{
+    //     API.post('/reports/daily').then((res)=>setDaily(res.data))
+    //     API.get('/reports/top-products').then((res)=>{console.log(res.data);setTopProducts(res.data)})
+    //     API.post('/reports/weekly').then((res)=>setChartData(res.data))
+    // },[])
+
+//     useEffect(() => {
+//     API.post('/reports/daily').then((res) => setDaily(res.data));
+//     API.get('/reports/top-products').then((res) => setTopProducts(res.data));
+
+//     // جلب بيانات الرسم البياني
+//     API.post('/reports/weekly').then((res) => {
+//         console.log("Weekly Data from Server:", res.data); // انظر في الكونسول لتعرف شكل البيانات
+        
+//         // إذا كانت البيانات قادمة بأسماء مختلفة، قم بعمل Map لها هنا
+//         // مثال: لو كانت البيانات تأتي كـ { _id: 'Sat', total: 100 }
+//         const formattedData = res.data.map(item => ({
+//             day: item.day || item._id, // استخدم day أو الـ id القادم من السيرفر
+//             sales: item.sales || item.totalSales || 0
+//         }));
+
+//         setChartData(formattedData);
+//     }).catch(err => console.error("Error fetching weekly reports:", err));
+// }, []);
+
+useEffect(() => {
+    // جلب البيانات اليومية
+    API.post('/reports/daily')
+        .then((res) => {
+            console.log("Daily Data Received:", res.data);
+            setDaily(res.data);
+        })
+        .catch(err => console.error("Daily API Error:", err));
+
+    // جلب أفضل المنتجات
+    API.get('/reports/top-products')
+        .then((res) => {
+            console.log("Top Products Received:", res.data);
+            // تأكد أن البيانات مصفوفة
+            setTopProducts(Array.isArray(res.data) ? res.data : []);
+        })
+        .catch(err => console.error("Top Products Error:", err));
+
+    // جلب بيانات الرسم البياني
+    API.post('/reports/weekly')
+        .then((res) => {
+            console.log("Weekly Chart Data:", res.data);
+            // تحويل البيانات لتناسب الرسم البياني إذا كانت مختلفة
+            if (Array.isArray(res.data)) {
+                setChartData(res.data);
+            }
+        })
+        .catch(err => console.error("Weekly Chart Error:", err));
+}, []);
 
     const getRangeReport = (e)=>{
         e.preventDefault()
@@ -51,7 +100,7 @@ const Reports = () => {
         className='text-center space-y-4'>
             <h1 className='text-5xl font-bold text-neutral-900
             flex items-center justify-center gap-3'>
-                <LineChart className='text-neutral-800' size={42}/>
+                <ChartIcon className='text-neutral-800' size={42}/>
                 Reports & Insights
 
             </h1>
@@ -113,14 +162,14 @@ const Reports = () => {
             </h2>
             <div className='w-full h-80'>
                 <ResponsiveContainer width="100%" height={320}>
-                    <RLineChart data={chartData}>
+                    <LineChart data={chartData}>
                         <CartesianGrid strokeDasharray='3 3' stroke='#ddd'/>
                         <XAxis dataKey='day'/>
                         <YAxis/>
                         <Tooltip/>
                         <Line type='monotone' dataKey='sales' stroke='#aE3A5F' strokeWidth={3}
                         dot={{r:4}} activeDot={{r:6}}/>
-                    </RLineChart>
+                    </LineChart>
                 </ResponsiveContainer>
             </div>
 
@@ -167,7 +216,7 @@ const Reports = () => {
             <ul className='grid md:grid-cols-2 lg:grid-cols-3 gap-6'>
                 {topProducts.map((p, index) => (
 
-                    <motion.li key={p._id} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}}
+                    <motion.li key={p._id || index} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}}
                     transition={{delay:index*0.05}} whileHover={{scale:1.04}} className='p-5 bg-white border
                     border-neutral-200 rounded-2xl shadow-sm hover:shadow-xl flex items-center gap-4'>
 

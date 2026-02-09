@@ -1,13 +1,14 @@
 import { useState , useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
 import {motion} from 'framer-motion';
-import {Package , AlertCircle} from 'lucide-react';
+import {Package , AlertCircle , Plus} from 'lucide-react';
 
 
 const Products = () => {
     const [products , setProducts] = useState([]);
     const [ error , setError ] = useState('');
-    
+    const navigate = useNavigate();
     useEffect(()=>{
         API.get('/products')
         .then((res) => setProducts(res.data))
@@ -18,12 +19,23 @@ const Products = () => {
     })
   return (
     <div className="pt-32 min-h-screen p-10 bg-linear-to-b from-[#faf6ef] to-[#f0e5d2]">
-        <motion.h1 initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}}
-        className="text-4xl font-bold text-neutral-900 mb-10 flex items-center gap-3">
-            <Package size={36} className="text-[#C9A86A]"/>
+    <motion.div initial={{opacity:0,y:-10}} animate={{opacity:1,y:0}}
+      className='flex items-center justify-between mb-10'>
+         <div className='flex items-center gap-3'>
+          <div className='p-3 bg-[#C9A86A]/20 border border-[#C9A86A]/40 rounded-xl'>
+          <Package size={36} className="text-[#C9A86A]"/>
+          </div>
+          <h1 className='text-4xl font-bold text-neutral-900 tracking-wide'>
             Products
+          </h1>
+        </div>
+        <motion.button whileHover={{scale:1.05}} whileTap={{scale:0}}
+        onClick={()=> navigate('/products/create')} className='px-5 py-3 flex items-center gap-2
+        bg-[#C9A86A] text-white rounded-xl shadow-md hover:bg-[#b8965f] transition'>
+          <Plus size={20} /> Add Product
 
-        </motion.h1>
+        </motion.button>
+        </motion.div>
         {error && (
             <motion.div initial={{opacity:0}} animate={{opacity:1}}
             className="flex items-center gap-2 p-3 bg-red-100 border
