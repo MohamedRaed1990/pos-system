@@ -74,25 +74,47 @@ useEffect(() => {
         .catch(err => console.error("Top Products Error:", err));
 
     // جلب بيانات الرسم البياني
-    API.post('/reports/weekly')
+    API.post('/reports/weekly',{})
         .then((res) => {
             console.log("Weekly Chart Data:", res.data);
+            setRange(res.data);
             // تحويل البيانات لتناسب الرسم البياني إذا كانت مختلفة
-            if (Array.isArray(res.data)) {
-                setChartData(res.data);
-            }
+            if (res.data && Array.isArray(res.data.chartData)) {
+                setChartData(res.data.chartData);
+            } else {
+                setChartData([]); // تصفير الرسم إذا لم توجد بيانات
+        }
         })
         .catch(err => console.error("Weekly Chart Error:", err));
 }, []);
 
-    const getRangeReport = (e)=>{
-        e.preventDefault()
-        if (!dates.start || !dates.end) return;
-        API.post('/reports/weekly',dates).then((res)=>{
-            setRange(res.data);
-            setChartData(res.data);
-        })
-    }
+    // const getRangeReport = (e)=>{
+    //     e.preventDefault()
+    //     if (!dates.start || !dates.end) return;
+    //     API.post('/reports/weekly',dates).then((res)=>{
+    //         setRange(res.data);
+    //         setChartData(res.data);
+    //     })
+    // }
+
+    const getRangeReport = (e) => {
+    e.preventDefault();
+    if (!dates.start || !dates.end) return;
+
+    API.post('/reports/weekly', dates).then((res) => {
+        // 1. تحديث بيانات النطاق (الإجمالي وعدد الفواتير)
+        setRange(res.data); 
+
+        // 2. تحديث بيانات الرسم البياني (نأخذ المصفوفة فقط من داخل الرد)
+        // تأكد أن الاسم يطابق ما يرسله السيرفر (chartData)
+        if (res.data.chartData) {
+            setChartData(res.data.chartData);
+        } else {
+            // حل احتياطي إذا كان السيرفر يرسل المصفوفة مباشرة
+            setChartData(Array.isArray(res.data) ? res.data : []);
+        }
+    }).catch(err => console.error("Filter Error:", err));
+};
   return (
     <div className='pt-32 max-w-9xl mx-auto p-10 space-y-16 bg-[#f8f6f1]'>
     
